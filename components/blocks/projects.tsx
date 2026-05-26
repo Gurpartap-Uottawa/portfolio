@@ -12,7 +12,7 @@ const projects: Gallery4Item[] = [
     image: "/projects/weatherAppLandingPage.png",
     tags: ["Next.js 16", "TypeScript", "Tailwind v4", "WeatherAPI", "Groq AI", "Framer Motion"],
     github: "https://github.com/Gurpartap-Uottawa/weather-app",
-    live: "https://vercel.com/gurpartap-singh-s-projects/portfolio",
+    live: "https://weather-app-gurpartap.vercel.app/",
     status: "Completed",
   },
   {
