@@ -1,7 +1,8 @@
 "use client"
 
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
+import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 
 const certs = [
   {
@@ -36,27 +37,23 @@ const certs = [
   },
 ]
 
-const GAP = 20
-
 export function Certifications() {
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>()
+  const [canScrollPrev, setCanScrollPrev] = useState(false)
+  const [canScrollNext, setCanScrollNext] = useState(false)
   const [current, setCurrent] = useState(0)
-  const [cardWidth, setCardWidth] = useState(360)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const total = certs.length
 
   useEffect(() => {
+    if (!carouselApi) return
     const update = () => {
-      if (containerRef.current) {
-        setCardWidth(Math.min(360, containerRef.current.offsetWidth))
-      }
+      setCanScrollPrev(carouselApi.canScrollPrev())
+      setCanScrollNext(carouselApi.canScrollNext())
+      setCurrent(carouselApi.selectedScrollSnap())
     }
     update()
-    window.addEventListener("resize", update)
-    return () => window.removeEventListener("resize", update)
-  }, [])
-
-  const prev = () => setCurrent((c) => Math.max(0, c - 1))
-  const next = () => setCurrent((c) => Math.min(total - 1, c + 1))
+    carouselApi.on("select", update)
+    return () => { carouselApi.off("select", update) }
+  }, [carouselApi])
 
   return (
     <section className="pt-5 pb-5 px-4">
@@ -73,15 +70,15 @@ export function Certifications() {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={prev}
-              disabled={current === 0}
+              onClick={() => carouselApi?.scrollPrev()}
+              disabled={!canScrollPrev}
               className="w-10 h-10 rounded-full border border-white/20 text-white flex items-center justify-center hover:border-white/50 transition-colors disabled:opacity-25 disabled:cursor-default"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
             <button
-              onClick={next}
-              disabled={current === total - 1}
+              onClick={() => carouselApi?.scrollNext()}
+              disabled={!canScrollNext}
               className="w-10 h-10 rounded-full border border-white/20 text-white flex items-center justify-center hover:border-white/50 transition-colors disabled:opacity-25 disabled:cursor-default"
             >
               <ArrowRight className="w-4 h-4" />
@@ -90,65 +87,66 @@ export function Certifications() {
         </div>
 
         {/* Carousel */}
-        <div className="overflow-hidden" ref={containerRef}>
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{
-              gap: `${GAP}px`,
-              transform: `translateX(calc(-${current * (cardWidth + GAP)}px))`,
-            }}
-          >
+        <Carousel
+          setApi={setCarouselApi}
+          opts={{
+            breakpoints: {
+              "(max-width: 768px)": { dragFree: true },
+            },
+          }}
+        >
+          <CarouselContent className="-ml-[20px]">
             {certs.map((cert) => (
-              <a
-                key={cert.id}
-                href={cert.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex-shrink-0 rounded-2xl overflow-hidden relative block"
-                style={{ width: `${cardWidth}px` }}
-              >
-                {/* Image */}
-                <div className="relative h-56 overflow-hidden">
-                  <img
-                    src={cert.image}
-                    alt={cert.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                  <span className="absolute top-3 right-3 text-[10px] text-indigo-300 border border-indigo-500/40 bg-indigo-500/10 px-3 py-1 rounded-full tracking-wide uppercase">
-                    Completed
-                  </span>
-                </div>
-
-                {/* Body */}
-                <div className="bg-white/[0.03] border border-white/10 border-t-0 rounded-b-2xl p-5">
-                  <p className="text-[10px] text-indigo-400 uppercase tracking-widest mb-1 flex items-center gap-1">
-                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                    {cert.issuer}
-                  </p>
-                  <h3 className="text-white font-bold text-lg mb-1">{cert.title}</h3>
-                  <p className="text-white/40 text-xs mb-3 leading-relaxed">{cert.description}</p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      {cert.date && <p className="text-white/30 text-[10px]">Issued {cert.date}</p>}
-                      {cert.certNo && <p className="text-white/20 text-[10px]">#{cert.certNo}</p>}
-                    </div>
-                    <span className="text-xs text-white/50 flex items-center gap-1 group-hover:text-white transition-colors">
-                      Verify <ExternalLink className="w-3 h-3" />
+              <CarouselItem key={cert.id} className="pl-[20px] max-w-[360px]">
+                <a
+                  href={cert.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex-shrink-0 rounded-2xl overflow-hidden relative block"
+                >
+                  {/* Image */}
+                  <div className="relative h-56 overflow-hidden">
+                    <img
+                      src={cert.image}
+                      alt={cert.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                    <span className="absolute top-3 right-3 text-[10px] text-indigo-300 border border-indigo-500/40 bg-indigo-500/10 px-3 py-1 rounded-full tracking-wide uppercase">
+                      Completed
                     </span>
                   </div>
-                </div>
-              </a>
+
+                  {/* Body */}
+                  <div className="bg-white/[0.03] border border-white/10 border-t-0 rounded-b-2xl p-5">
+                    <p className="text-[10px] text-indigo-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                      {cert.issuer}
+                    </p>
+                    <h3 className="text-white font-bold text-lg mb-1">{cert.title}</h3>
+                    <p className="text-white/40 text-xs mb-3 leading-relaxed">{cert.description}</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        {cert.date && <p className="text-white/30 text-[10px]">Issued {cert.date}</p>}
+                        {cert.certNo && <p className="text-white/20 text-[10px]">#{cert.certNo}</p>}
+                      </div>
+                      <span className="text-xs text-white/50 flex items-center gap-1 group-hover:text-white transition-colors">
+                        Verify <ExternalLink className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </CarouselItem>
             ))}
-          </div>
-        </div>
+          </CarouselContent>
+        </Carousel>
 
         {/* Dots */}
         <div className="flex justify-center gap-2 mt-8">
           {certs.map((_, i) => (
             <button
               key={i}
-              onClick={() => setCurrent(i)}
+              onClick={() => carouselApi?.scrollTo(i)}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 current === i ? "w-6 bg-indigo-400" : "w-1.5 bg-white/20"
               }`}
