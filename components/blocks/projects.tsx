@@ -4,6 +4,18 @@ import { Gallery4, type Gallery4Item } from "@/components/ui/gallery4";
 
 const projects: Gallery4Item[] = [
   {
+    id: "world-cup-2026",
+    title: "World Cup 2026 — Free Screenings Finder",
+    description:
+      "Find free public screenings and FIFA Fan Festivals near you for every World Cup 2026 match. Covers the full 79-game schedule, official Fan Festival locations across all 15 host cities, an interactive dark-theme map, and an AI chatbot for questions about squads, schedules, and screenings.",
+    href: "https://world-cup26-screenings.vercel.app/",
+    image: "/projects/WorldCupLandingPage.png",
+    tags: ["Next.js 16", "FastAPI", "Tailwind v4", "Google Maps API", "Groq AI", "Serper API"],
+    github: "https://github.com/Gurpartap-Uottawa/WorldCup26",
+    live: "https://world-cup26-screenings.vercel.app/",
+    status: "Completed",
+  },
+  {
     id: "weather-app",
     title: "Weather App",
     description:
