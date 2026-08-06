@@ -5,6 +5,7 @@ import { Certifications } from "@/components/blocks/certifications"
 import { CareerTimeline } from "@/components/blocks/career-timeline"
 import { Projects } from "@/components/blocks/projects"
 import { LiquidButton } from "@/components/ui/liquid-glass-button"
+import { ProfileCard } from "@/components/ui/profile-card"
 import { Mail } from "lucide-react"
 
 function GitHubIcon() {
@@ -33,16 +34,12 @@ export function Hero() {
               <p className="text-xs text-green-500 uppercase tracking-widest">Available for New Projects</p>
             </div>
 
-            <h1 className="mb-4 text-white text-center text-5xl sm:text-7xl font-extrabold tracking-tighter">
-              Gurpartap<br />Singh
-            </h1>
-
-            <p className="text-white/55 text-center text-sm md:text-base max-w-xl mx-auto leading-relaxed mb-8">
-              Software engineer with 4+ years of experience building Java/Python backends, React frontends, and SQL-backed data workflows in
-              fast-moving teams. I've owned features end to end—optimizing APIs and queries, improving CI/CD with GitHub Actions and Jenkins,
-              deploying to AWS, and debugging production issues—and I use AI coding tools like Cursor and Claude Code as everyday collaborators
-              for refactors, tests, and repo exploration while keeping correctness and code quality firmly in my own hands.
-            </p>
+            <div className="mb-8">
+              <ProfileCard
+                title="Software Engineer"
+                description="Software engineer with 4+ years of experience building Java/Python backends, React frontends, and SQL-backed data workflows in fast-moving teams. I've owned features end to end—optimizing APIs and queries, improving CI/CD with GitHub Actions and Jenkins, deploying to AWS, and debugging production issues—and I use AI coding tools like Cursor and Claude Code as everyday collaborators for refactors, tests, and repo exploration while keeping correctness and code quality firmly in my own hands."
+              />
+            </div>
 
             <div className="flex flex-wrap gap-2 justify-center mb-8">
               {["Java / Spring Boot", "Python", "TypeScript / React", "AWS · GCP basics", "Docker · CI/CD", "Github Actions · Jenkins", "Claude Code · Cursor"].map((tag) => (
